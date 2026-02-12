@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <title>СЛОВЕСНА БИТКА PRO</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap');
+
+        body { margin: 0; font-family: 'Montserrat', sans-serif; background: #1a1a1a; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        
+        .screen { width: 98vw; height: 96vh; background: #fff; border-radius: 25px; display: flex; flex-direction: column; border: 8px solid #333; position: relative; }
+
+        .header { 
+            height: 70px; background: #1e3c72; display: flex; align-items: center; justify-content: center; 
+            border-radius: 15px 15px 0 0; position: relative; z-index: 10;
+        }
+        .header h1 { color: #ffffff; font-size: 2.8em; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+
+        #timer-box { 
+            position: absolute; right: 25px; background: #fff; color: #000; 
+            padding: 5px 20px; border-radius: 12px; font-size: 2em; border: 3px solid #333; font-weight: 900;
+        }
+
+        .main { flex: 1; display: flex; padding: 15px; gap: 15px; background: #f0f0f0; min-height: 0; }
+        
+        .side-panel { width: 35%; display: flex; flex-direction: column; min-height: 0; }
+        
+        .card { 
+            background: #fff; border-radius: 25px; border: 4px solid #ccc; flex: 1; 
+            display: flex; flex-direction: column; justify-content: space-between;
+            overflow: hidden; box-shadow: 0 10px 0 #bbb; 
+        }
+
+        .team-h { padding: 12px; color: white; font-size: 1.8em; text-align: center; text-transform: uppercase; }
+        .blue-h { background: #007bff; }
+        .red-h { background: #ff3b3b; }
+
+        .word-box { font-size: 2.5em; text-align: center; padding: 10px 0; color: #000; font-weight: 900; }
+        
+        .display { 
+            background: #e3f2fd; color: #000; margin: 0 15px; 
+            height: 85px; border-radius: 15px; display: flex; 
+            justify-content: center; align-items: center; 
+            font-size: 2.6em; border: 4px solid #90caf9; font-weight: 900; 
+        }
+
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; flex: 1; align-content: center; }
+        
+        .s-btn { 
+            background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%); border: 2px solid #bbb; 
+            padding: 25px 5px; border-radius: 15px; font-size: 2em; font-weight: 900; color: #000;
+            cursor: pointer; box-shadow: 0 6px 0 #999;
+        }
+        .s-btn:active { transform: translateY(4px); box-shadow: none; }
+
+        .check-btn { 
+            grid-column: span 3; padding: 20px; font-size: 1.8em; color: white; border: none; border-radius: 15px; 
+            cursor: pointer; font-weight: 900; box-shadow: 0 6px 0 rgba(0,0,0,0.2); margin-top: 5px;
+        }
+        .blue-check { background: #007bff; }
+        .red-check { background: #ff3b3b; }
+
+        .center-field { 
+            width: 30%; border-radius: 30px; border: 6px solid #fff; position: relative; overflow: hidden;
+            background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 55%, #a8e063 55%, #56ab2f 100%); 
+        }
+        .tug-war { position: absolute; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; transition: transform 0.6s ease-out; }
+        .tug-img { width: 110%; display: block; }
+
+        /* КРАСИВ ПАНЕЛ ЗА ПОБЕДА */
+        #win-panel {
+            display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 90%; background: white; border: 10px solid #f1c40f; border-radius: 40px;
+            padding: 40px; text-align: center; z-index: 1000; box-shadow: 0 0 100px rgba(0,0,0,0.6);
+        }
+        .win-cup { font-size: 8em; margin-bottom: 10px; display: block; animation: bounce 1s infinite alternate; }
+        #win-title { font-size: 3.5em; color: #1e3c72; margin: 0; text-transform: uppercase; }
+        #win-info { font-size: 2em; color: #333; margin: 20px 0; font-weight: bold; }
+        .next-btn { background: #2ecc71; color: white; border: none; padding: 20px 50px; font-size: 1.8em; border-radius: 20px; cursor: pointer; font-weight: 900; box-shadow: 0 8px 0 #27ae60; transition: 0.2s; }
+        .next-btn:hover { transform: scale(1.05); }
+
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-20px); } }
+
+        .author-tag { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); font-size: 0.9em; color: rgba(0, 0, 0, 0.4); font-weight: bold; z-index: 5; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<div class="screen">
+    <div class="header">
+        <h1>СЛОВЕСНА БИТКА</h1>
+        <div id="timer-box">00:00</div>
+    </div>
+
+    <div class="main">
+        <div class="side-panel">
+            <div class="card">
+                <div class="team-h blue-h">СИНИ • <span id="p1">0</span>/5</div>
+                <div class="word-box" id="w1">---</div>
+                <div class="display" id="d1"></div>
+                <div class="grid" id="g1"></div>
+            </div>
+        </div>
+
+        <div class="center-field">
+            <div class="tug-war" id="tug-container">
+                <img src="1.png" class="tug-img">
+            </div>
+            <div class="author-tag">Автор:Дочка Кючукова</div>
+            <div id="win-panel">
+                <span class="win-cup">🏆</span>
+                <div id="win-title">ПОБЕДА!</div>
+                <div id="win-info">Отборът спечели за 00:00</div>
+                <button class="next-btn" onclick="nextLevel()">СЛЕДВАЩО НИВО ➔</button>
+            </div>
+        </div>
+
+        <div class="side-panel">
+            <div class="card">
+                <div class="team-h red-h">ЧЕРВЕНИ • <span id="p2">0</span>/5</div>
+                <div class="word-box" id="w2">---</div>
+                <div class="display" id="d2"></div>
+                <div class="grid" id="g2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const levels = [
+        { words: ["ПЛАНИНА", "МАШИНА", "КНИГА", "РОБОТ", "СЛЪНЦЕ"], syls: ["ПЛА", "НИ", "НА", "МА", "ШИ", "КНИ", "ГА", "РО", "БОТ", "СЛЪН", "ЦЕ", "ВЪ"] },
+        { words: ["РАНИЦА", "МОЛИВ", "УЧЕНИК", "ДЪСКА", "БЮРО"], syls: ["РА", "НИ", "ЦА", "МО", "ЛИВ", "У", "ЧЕ", "НИК", "ДЪС", "КА", "БЮ", "РО"] },
+        { words: ["ЯБЪЛКА", "КРУША", "БАНАН", "ГРОЗДЕ", "ЛИМОН"], syls: ["Я", "БЪЛ", "КА", "КРУ", "ША", "БА", "НАН", "ГРОЗ", "ДЕ", "ЛИ", "МОН", "ПЛОД"] },
+        { words: ["КУЧЕ", "КОТКА", "ЗАЕК", "ПЕТЕЛ", "МЕЧКА"], syls: ["КУ", "ЧЕ", "КОТ", "КА", "ЗА", "ЕК", "ПЕ", "ТЕЛ", "МЕЧ", "КА", "ЖИ", "ВОТ"] },
+        { words: ["ПРОЛЕТ", "ЛЯТО", "ЕСЕН", "ЗИМА", "ВРЕМЕ"], syls: ["ПРО", "ЛЕТ", "ЛЯ", "ТО", "Е", "СЕН", "ЗИ", "МА", "ВРЕ", "МЕ", "ГО", "ДИ"] },
+        { words: ["ЗНАМЕ", "ПЕСЕН", "РОДИНА", "ЕЗИК", "ШКОЛО"], syls: ["ЗНА", "МЕ", "ПЕ", "СЕН", "РО", "ДИ", "НА", "Е", "ЗИК", "ШКО", "ЛО", "БГ"] }
+    ];
+
+    let game = { lvl: 0, w: 0, s1: 0, s2: 0, off: 0, sec: 0, in1: [], in2: [], active: true };
+    let clock;
+
+    function loadLevel() {
+        game.w = 0; game.s1 = 0; game.s2 = 0; game.off = 0; game.active = true;
+        document.getElementById('win-panel').style.display = 'none';
+        
+        const syls = levels[game.lvl].syls;
+        [1,2].forEach(n => {
+            const g = document.getElementById('g'+n); g.innerHTML = '';
+            syls.forEach(s => {
+                let b = document.createElement('button'); b.className = 's-btn'; b.innerText = s;
+                b.onclick = () => { if(game.active) { game['in'+n].push(s); document.getElementById('d'+n).innerText = game['in'+n].join('-'); } };
+                g.appendChild(b);
+            });
+            let c = document.createElement('button'); c.className = `check-btn ${n==1?'blue-check':'red-check'}`;
+            c.innerText = 'ПРОВЕРИ ✅'; c.onclick = () => check(n); g.appendChild(c);
+        });
+        updateDisplay();
+    }
+
+    function check(t) {
+        if(!game.active) return;
+        if(game['in'+t].join('') === levels[game.lvl].words[game.w]) {
+            game['s'+t]++; 
+            game.off = (t==1) ? game.off - 60 : game.off + 60;
+            game.w++;
+            if(game.w >= 5) showVictory(t); else updateDisplay();
+        } else {
+            document.getElementById('d'+t).style.background = '#ffcdd2';
+            setTimeout(() => document.getElementById('d'+t).style.background = '#e3f2fd', 300);
+        }
+        game['in'+t] = []; document.getElementById('d'+t).innerText = '';
+    }
+
+    function updateDisplay() {
+        const word = levels[game.lvl].words[game.w] || "---";
+        document.getElementById('w1').innerText = word; document.getElementById('w2').innerText = word;
+        document.getElementById('p1').innerText = game.s1; document.getElementById('p2').innerText = game.s2;
+        document.getElementById('tug-container').style.transform = `translateX(${game.off}px)`;
+    }
+
+    function showVictory(t) {
+        game.active = false; clearInterval(clock);
+        const team = t === 1 ? "СИНИТЕ" : "ЧЕРВЕНИТЕ";
+        const time = document.getElementById('timer-box').innerText;
+        
+        document.getElementById('win-title').innerText = `ПОБЕДА ЗА ${team}!`;
+        document.getElementById('win-info').innerText = `БРАВО! Време: ${time}`;
+        document.getElementById('win-panel').style.display = 'block';
+    }
+
+    function startTimer() {
+        clearInterval(clock);
+        clock = setInterval(() => {
+            game.sec++;
+            let m = Math.floor(game.sec/60).toString().padStart(2,'0');
+            let s = (game.sec%60).toString().padStart(2,'0');
+            document.getElementById('timer-box').innerText = `${m}:${s}`;
+        }, 1000);
+    }
+    
+    function nextLevel() {
+        game.lvl = (game.lvl + 1) % levels.length;
+        game.sec = 0; startTimer(); loadLevel();
+    }
+
+    startTimer(); loadLevel();
+</script>
+</body>
+</html>
